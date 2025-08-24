@@ -39,6 +39,8 @@ const eslintConfig = [
       '@typescript-eslint': tsPlugin,
     },
     rules: {
+      'react/react-in-jsx-scope': 'off', // <- React import 필요 없음
+      'react/prop-types': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -66,6 +68,7 @@ const eslintConfig = [
       globals: {
         ...globals.browser,
         ...globals.node,
+        React: 'readonly', //eslint.config React에서 import 하지 않아도 ESLint가 React is not defined 오류 내지않게 설정
       },
     },
     settings: {
