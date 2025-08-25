@@ -1,20 +1,12 @@
-import { Inter, Fira_Mono } from 'next/font/google';
+// app/layout.tsx
+import { pretendard, iropke } from './fonts';
 
-const geistSans = Inter({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
+import './globals.css';
 
-const geistMono = Fira_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-});
-
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='en'>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+    <html lang='ko' className={`${pretendard.variable} ${iropke.variable}`}>
+      <body className='font-sans'>{children}</body>
     </html>
   );
 }
