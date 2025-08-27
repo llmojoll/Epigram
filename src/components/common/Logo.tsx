@@ -3,11 +3,10 @@ import React from 'react';
 export default function Logo() {
   return (
     <svg
-      width='102'
-      height='26'
       viewBox='0 0 102 26'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
+      className='w-[102px] lg:w-[131px] h-[26px] lg:h-[36px]'
     >
       {/* 왼쪽 아이콘 부분 빨강 */}
       <path
