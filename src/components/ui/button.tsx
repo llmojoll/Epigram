@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
+import { pretendard, iropke } from '@/app/fonts';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
@@ -10,25 +11,28 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
-        destructive:
-          'bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
-        outline:
-          'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
-        secondary: 'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
-        link: 'text-primary underline-offset-4 hover:underline',
+        line100: 'bg-line-100 text-gray-300',
+        line200: 'bg-line-200 text-blue-500',
+        black500: 'bg-black-500 text-white hover:bg-black-400',
+        black600: 'bg-black-600 text-white hover:bg-black-500',
+        blue900: 'bg-blue-900 text-white hover:bg-blue-700',
       },
       size: {
-        default: 'h-9 px-4 py-2 has-[>svg]:px-3',
-        sm: 'h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',
-        lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
+        sm: 'w-[76px] lg:w-[102px] h-[36px] lg:h-[48px] text-md lg:text-xl font-semibold',
+        md: 'w-[145px] lg:w-[194px] h-[48px] lg:h-[64px] rounded-full text-md lg:text-xl font-semibold',
+        lg: 'w-[312px] md:w-[384px] lg:w-[640px] h-[44px] lg:h-[64px] rounded-xl lg:rounded-2xl text-lg lg:text-xl font-semibold',
+        full: 'w-full h-11',
         icon: 'size-9',
+      },
+      font: {
+        pretendard: pretendard.className,
+        iropke: iropke.className,
       },
     },
     defaultVariants: {
-      variant: 'default',
-      size: 'default',
+      variant: 'black500',
+      size: 'full',
+      font: 'pretendard',
     },
   },
 );
@@ -37,6 +41,7 @@ function Button({
   className,
   variant,
   size,
+  font,
   asChild = false,
   ...props
 }: React.ComponentProps<'button'> &
@@ -48,7 +53,7 @@ function Button({
   return (
     <Comp
       data-slot='button'
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size, font, className }))}
       {...props}
     />
   );
