@@ -1,4 +1,5 @@
 import './globals.css';
+import Gnb from '@/components/common/Gnb';
 
 import { pretendard, iropke } from './fonts';
 
@@ -9,7 +10,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='ko' className={`${pretendard.variable} ${iropke.variable}`}>
-      <body>{children}</body>
+      <body>
+        <Gnb />
+        <main>{children}</main>
+      </body>
     </html>
   );
 }
