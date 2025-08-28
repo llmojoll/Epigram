@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 export default function ButtonTest() {
   return (
@@ -20,6 +21,9 @@ export default function ButtonTest() {
           아이콘 버튼
         </Button>
       </div>
+
+      <h1 className='text-2xl font-bold mb-4'>Input Variants</h1>
+      <Input placeholder='이메일' />
     </div>
   );
 }
