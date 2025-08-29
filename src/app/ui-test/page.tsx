@@ -1,3 +1,4 @@
+import BasicModal from '@/components/common/BasicModal';
 import { Button } from '@/components/ui/button';
 
 export default function ButtonTest() {
@@ -19,6 +20,10 @@ export default function ButtonTest() {
         <Button variant='line200' size='icon'>
           아이콘 버튼
         </Button>
+      </div>
+
+      <div className=''>
+        <BasicModal />
       </div>
     </div>
   );
