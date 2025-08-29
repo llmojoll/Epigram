@@ -10,7 +10,7 @@ function Textarea({ className, variant = 'default', ...props }: TextareaProps) {
   const variantClass = {
     default: 'border border-blue-300 placeholder:text-blue-400 text-black-950',
     outlined:
-      'border border-blue-200 placeholder:text-blue-400 text-black-700 focus:border-black-600',
+      'border border-blue-200 placeholder:text-blue-400 text-black-700 focus:border-black-600 bg-transparent',
   }[variant];
 
   return (
