@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function ButtonTest() {
   return (
@@ -19,6 +20,10 @@ export default function ButtonTest() {
         <Button variant='line200' size='icon'>
           아이콘 버튼
         </Button>
+      </div>
+      <div>
+        <Textarea placeholder='500자 이내로 입력해주세요.' />
+        <Textarea placeholder='500자 이내로 입력해주세요.' variant='outlined' />
       </div>
     </div>
   );
