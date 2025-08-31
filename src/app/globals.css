@@ -24,10 +24,10 @@ input,
 button,
 textarea,
 select {
-  font: inherit;
+  /* font: inherit;
   background: transparent;
   border: none;
-  outline: none;
+  outline: none; */
 }
 
 a {
