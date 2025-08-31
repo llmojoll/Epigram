@@ -1,5 +1,6 @@
 import BasicModal from '@/components/common/BasicModal';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function ButtonTest() {
   return (
@@ -21,9 +22,16 @@ export default function ButtonTest() {
           아이콘 버튼
         </Button>
       </div>
-
       <div className=''>
         <BasicModal />
+      </div>
+      <div className='bg-black-200'>
+        <Textarea placeholder='500자 이내로 입력해주세요.' className='w-[500px]' />
+        <Textarea
+          placeholder='500자 이내로 입력해주세요.'
+          variant='outlined'
+          className='w-[500px]'
+        />
       </div>
     </div>
   );
