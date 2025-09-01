@@ -2,7 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+/* reset CSS */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  /* font: inherit;
+  background: transparent;
+  border: none;
+  outline: none; */
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 /* 커스텀 기본 스타일 */
 body {
-  @apply bg-white text-black-900 font-sans;
+  @apply bg-background-gray text-black-900 font-sans;
 }

@@ -13,11 +13,12 @@ const buttonVariants = cva(
       variant: {
         line100: 'bg-line-100 text-gray-300',
         line200: 'bg-line-200 text-blue-500',
-        black500: 'bg-black-500 text-white hover:bg-black-400',
-        black600: 'bg-black-600 text-white hover:bg-black-500',
+        black500: 'bg-black-500 text-white hover:bg-black-600',
+        black600: 'bg-black-600 text-white hover:bg-black-700',
         blue900: 'bg-blue-900 text-white hover:bg-blue-700',
       },
       size: {
+        xs: 'w-[53px] h-[32px] text-xs font-semibold rounded-lg',
         sm: 'w-[76px] lg:w-[102px] h-[36px] lg:h-[48px] text-md lg:text-xl font-semibold',
         md: 'w-[145px] lg:w-[194px] h-[48px] lg:h-[64px] rounded-full text-md lg:text-xl font-semibold',
         lg: 'w-[312px] md:w-[384px] lg:w-[640px] h-[44px] lg:h-[64px] rounded-xl lg:rounded-2xl text-lg lg:text-xl font-semibold',
