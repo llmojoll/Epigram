@@ -1,11 +1,30 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useForm } from 'react-hook-form';
 
 import Logo from '@/components/common/Logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
+type LoginFormData = {
+  email: string;
+  password: string;
+};
+
 export default function Login() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<LoginFormData>({ mode: 'onBlur' });
+
+  const onSubmit = (data: LoginFormData) => {
+    console.log('로그인 시도:', data);
+    // TODO: API 연동
+  };
+
   return (
     <div className='flex justify-center items-center flex-col w-[312px] md:w-[384px] lg:w-[640px] mt-[128px] md:mt-[100px] lg:mt-[213px] m-auto mb-[104px] lg:mb-[220px]'>
       <div>
@@ -13,10 +32,45 @@ export default function Login() {
       </div>
 
       <div className='w-full mt-[50px] md:mt-[60px]'>
-        <form>
-          <Input placeholder='이메일' />
-          <Input placeholder='비밀번호' className='mt-2.5 lg:mt-4' />
-          <Button variant='black500' size='lg' type='submit' className='mt-5 lg:mt-6'>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Input
+            id='email'
+            placeholder='이메일'
+            type='email'
+            {...register('email', {
+              required: '이메일을 입력해주세요.',
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: '유효한 이메일 주소를 입력해주세요.',
+              },
+            })}
+            aria-invalid={!!errors.email}
+          />
+          {errors.email && <p className='text-red-500 text-sm mt-1'>{errors.email.message}</p>}
+          <Input
+            id='password'
+            placeholder='비밀번호'
+            type='password'
+            className='mt-2.5 lg:mt-4'
+            {...register('password', {
+              required: '비밀번호를 입력해주세요.',
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: '비밀번호는 최소6자이상 띄어쓰기를 포함 할 수 없습니다.',
+              },
+            })}
+            aria-invalid={!!errors.password}
+          />
+          {errors.password && (
+            <p className='text-red-500 text-sm mt-1'>{errors.password.message}</p>
+          )}
+          <Button
+            variant='black500'
+            size='lg'
+            type='submit'
+            className={!isValid ? 'mt-5 lg:mt-6 cursor-not-allowed' : 'mt-5 lg:mt-6'}
+            disabled={!isValid}
+          >
             로그인
           </Button>
         </form>
