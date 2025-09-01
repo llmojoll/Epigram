@@ -7,9 +7,9 @@ import { Input } from '@/components/ui/input';
 
 export default function Login() {
   return (
-    <div className='flex justify-center items-center flex-col w-[312px] md:w-[384px] lg:w-[640px] mt-[128px] md:mt-[100px] lg:mt-[213px] m-auto'>
+    <div className='flex justify-center items-center flex-col w-[312px] md:w-[384px] lg:w-[640px] mt-[128px] md:mt-[100px] lg:mt-[213px] m-auto mb-[104px] lg:mb-[220px]'>
       <div>
-        <Logo />
+        <Logo className='w-[172px] lg:w-[172px] h-[48px] lg:h-[48px]' />
       </div>
 
       <div className='w-full mt-[50px] md:mt-[60px]'>
@@ -38,10 +38,10 @@ export default function Login() {
       </div>
 
       <div className='w-full flex justify-center gap-4 mt-6 lg:mt-10'>
-        <Button className='p-[11px] lg:p-4' size='icon'>
+        <Button className='p-[11px] lg:p-4' size='icon' variant='white'>
           <Image src='/googlelogo.png' width={60} height={60} alt='구글 로고 이미지' />
         </Button>
-        <Button className='p-[11px] lg:p-4' size='icon'>
+        <Button className='p-[11px] lg:p-4' size='icon' variant='white'>
           <Image src='/kakaologo.png' width={60} height={60} alt='카카오 로고 이미지' />
         </Button>
       </div>
