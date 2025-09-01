@@ -11,6 +11,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        white: 'bg-white border borer-gray-300',
         line100: 'bg-line-100 text-gray-300',
         line200: 'bg-line-200 text-blue-500',
         black500: 'bg-black-500 text-white hover:bg-black-600',
@@ -23,7 +24,7 @@ const buttonVariants = cva(
         md: 'w-[145px] lg:w-[194px] h-[48px] lg:h-[64px] rounded-full text-md lg:text-xl font-semibold',
         lg: 'w-[312px] md:w-[384px] lg:w-[640px] h-[44px] lg:h-[64px] rounded-xl lg:rounded-2xl text-lg lg:text-xl font-semibold',
         full: 'w-full h-11',
-        icon: 'size-9',
+        icon: 'size-10 lg:size-[60px]',
       },
       font: {
         pretendard: pretendard.className,
