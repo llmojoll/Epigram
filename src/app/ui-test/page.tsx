@@ -1,5 +1,7 @@
+import BasicModal from '@/components/common/BasicModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function ButtonTest() {
   return (
@@ -8,6 +10,9 @@ export default function ButtonTest() {
 
       <div className='flex gap-4 flex-wrap'>
         <Button>기본 버튼</Button>
+        <Button variant='black500' size='xs'>
+          작은 버튼
+        </Button>
         <Button variant='blue900' size='md'>
           파란 버튼
         </Button>
@@ -24,6 +29,17 @@ export default function ButtonTest() {
 
       <h1 className='text-2xl font-bold mb-4'>Input Variants</h1>
       <Input placeholder='이메일' />
+      <div className=''>
+        <BasicModal />
+      </div>
+      <div className='bg-black-200'>
+        <Textarea placeholder='500자 이내로 입력해주세요.' className='w-[500px]' />
+        <Textarea
+          placeholder='500자 이내로 입력해주세요.'
+          variant='outlined'
+          className='w-[500px]'
+        />
+      </div>
     </div>
   );
 }
