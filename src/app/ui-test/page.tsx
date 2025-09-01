@@ -10,7 +10,7 @@ export default function ButtonTest() {
 
       <div className='flex gap-4 flex-wrap'>
         <Button>기본 버튼</Button>
-        <Button variant='black500' size='xs'>
+        <Button variant='white' size='xs'>
           작은 버튼
         </Button>
         <Button variant='blue900' size='md'>
