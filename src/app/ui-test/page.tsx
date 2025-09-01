@@ -1,5 +1,6 @@
 import BasicModal from '@/components/common/BasicModal';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 export default function ButtonTest() {
@@ -25,6 +26,9 @@ export default function ButtonTest() {
           아이콘 버튼
         </Button>
       </div>
+
+      <h1 className='text-2xl font-bold mb-4'>Input Variants</h1>
+      <Input placeholder='이메일' />
       <div className=''>
         <BasicModal />
       </div>
