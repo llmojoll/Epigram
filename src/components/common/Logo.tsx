@@ -1,12 +1,16 @@
 import React from 'react';
 
-export default function Logo() {
+type LogoProps = {
+  className?: string;
+};
+
+export default function Logo({ className = '' }: LogoProps) {
   return (
     <svg
       viewBox='0 0 102 26'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
-      className='w-[102px] lg:w-[131px] h-[26px] lg:h-[36px]'
+      className={`w-[102px] lg:w-[131px] h-[26px] lg:h-[36px] ${className}`}
     >
       <path
         d='M20.1807 8.73365L13.4242 5.44873C13.2566 5.36721 13.0617 5.36286 12.8905 5.43683L5.262 8.73365L12.863 12.4292C13.0494 12.5198 13.2681 12.5146 13.45 12.4151L20.1807 8.73365Z'
