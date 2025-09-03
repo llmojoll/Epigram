@@ -2,30 +2,44 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
+import { signup } from '@/api/auth';
 import Logo from '@/components/common/Logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-type LoginFormData = {
+type SignupFormData = {
   email: string;
-  password: string;
-  password2: string;
   nickname: string;
+  password: string;
+  passwordConfirmation: string;
 };
 
 export default function Signup() {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
     watch,
-  } = useForm<LoginFormData>({ mode: 'onBlur' });
+  } = useForm<SignupFormData>({ mode: 'onBlur' });
 
-  const onSubmit = (data: LoginFormData) => {
-    console.log('로그인 시도:', data);
-    // TODO: API 연동
+  const onSubmit = async (data: SignupFormData) => {
+    console.log('회원가입 시도:', data);
+
+    try {
+      const { email, nickname, password, passwordConfirmation } = data;
+
+      const result = await signup({ email, nickname, password, passwordConfirmation });
+      console.log('회원가입 성공:', result);
+
+      router.push('/login');
+    } catch (error) {
+      console.error('회원가입 실패:', error);
+    }
   };
 
   return (
@@ -73,18 +87,18 @@ export default function Signup() {
             <p className='text-red-500 text-sm mt-1'>{errors.password.message}</p>
           )}
           <Input
-            id='password2'
+            id='passwordConfirmation'
             placeholder='비밀번호 확인'
             type='password'
             className='mt-2.5 lg:mt-4'
-            {...register('password2', {
+            {...register('passwordConfirmation', {
               required: '비밀번호를 입력해주세요.',
               validate: (value) => value === watch('password') || '비밀번호가 일치하지 않습니다.',
             })}
-            aria-invalid={!!errors.password}
+            aria-invalid={!!errors.passwordConfirmation}
           />
-          {errors.password2 && (
-            <p className='text-red-500 text-sm mt-1'>{errors.password2.message}</p>
+          {errors.passwordConfirmation && (
+            <p className='text-red-500 text-sm mt-1'>{errors.passwordConfirmation.message}</p>
           )}
           <p className='mt-5 md:mt-10 text-md md:text-lg lg:text-xl font-medium text-blue-900'>
             닉네임
