@@ -11,3 +11,13 @@ export async function signup(params: SignupParams) {
   const response = await apiClient.post('/auth/signUp', params);
   return response.data;
 }
+
+export type LoginParams = {
+  email: string;
+  password: string;
+};
+
+export async function login(params: LoginParams) {
+  const response = await apiClient.post('/auth/signIn', params);
+  return response.data;
+}

@@ -2,8 +2,10 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
+import { login } from '@/api/auth';
 import Logo from '@/components/common/Logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,15 +16,23 @@ type LoginFormData = {
 };
 
 export default function Login() {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<LoginFormData>({ mode: 'onBlur' });
 
-  const onSubmit = (data: LoginFormData) => {
+  const onSubmit = async (data: LoginFormData) => {
     console.log('로그인 시도:', data);
-    // TODO: API 연동
+    try {
+      const result = await login(data);
+      console.log('로그인 성공:', result);
+      router.push('/');
+    } catch (error) {
+      console.error('로그인 실패:', error);
+    }
   };
 
   return (
@@ -55,7 +65,7 @@ export default function Login() {
             {...register('password', {
               required: '비밀번호를 입력해주세요.',
               pattern: {
-                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                value: /^\S{6,}$/,
                 message: '비밀번호는 최소6자이상 띄어쓰기를 포함 할 수 없습니다.',
               },
             })}
