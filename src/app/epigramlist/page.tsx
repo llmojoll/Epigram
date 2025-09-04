@@ -6,7 +6,7 @@ export default function EpigramList() {
   return (
     <div className='flex justify-center items-center flex-col m-auto w-[312px] md:w-[600px] lg:w-[1200px] mt-[32px] lg:mt-[120px] m-auto mb-[56px] '>
       <header className='flex justify-start w-full'>
-        <p>피드</p>
+        <p className='text-lg lg:text-2xl'>피드</p>
       </header>
       <section>
         <div>에피그램 리스트</div>
