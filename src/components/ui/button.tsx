@@ -23,7 +23,7 @@ const buttonVariants = cva(
         sm: 'w-[76px] lg:w-[102px] h-[36px] lg:h-[48px] text-md lg:text-xl font-semibold',
         md: 'w-[145px] lg:w-[194px] h-[48px] lg:h-[64px] rounded-full text-md lg:text-xl font-semibold',
         lg: 'w-[312px] md:w-[384px] lg:w-[640px] h-[44px] lg:h-[64px] rounded-xl lg:rounded-2xl text-lg lg:text-xl font-semibold',
-        full: 'w-full h-11',
+        full: 'w-full h-11 lg:h-[64px]',
         icon: 'size-10 lg:size-[60px]',
       },
       font: {
