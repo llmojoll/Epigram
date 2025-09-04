@@ -1,26 +1,19 @@
-export const validators = {
-  // 내용: 1~500자, 첫/끝 공백 불가
-  content: (value: string) => {
-    const regex = /^(?! )(?!.* $).{1,500}$/s;
-    return regex.test(value) || '내용은 1~500자 이내, 시작/끝 공백 없이 입력해주세요.';
+export const epigramValidators = {
+  content: {
+    pattern: /^(?! )(?!.* $).{1,500}$/s,
+    message: '내용은 1~500자 이내, 시작/끝 공백 없이 입력해주세요.',
   },
-
-  // 저자: 1~50자, 첫/끝 공백 불가
-  author: (value: string) => {
-    const regex = /^(?! )(?!.* $).{1,50}$/;
-    return regex.test(value) || '저자 이름은 1~50자, 시작/끝 공백 없이 입력해주세요.';
+  author: {
+    pattern: /^(?! )(?!.* $).{1,50}$/,
+    message: '저자 이름은 1~50자, 시작/끝 공백 없이 입력해주세요.',
   },
-
-  // URL
-  url: (value: string) => {
-    const regex = /^https?:\/\/[^\s$.?#].[^\s]*$/;
-    return regex.test(value) || '올바른 URL 형식이 아닙니다.';
+  url: {
+    pattern: /^https?:\/\/[^\s$.?#].[^\s]*$/,
+    message: '올바른 URL 형식이 아닙니다.',
   },
-
-  // 태그: 최대 10자, 첫/끝 공백 불가
-  tag: (value: string) => {
-    const regex = /^(?! )(?!.* $).{0,10}$/;
-    return regex.test(value) || '태그는 최대 10자, 시작/끝 공백 없이 입력 가능합니다.';
+  tag: {
+    pattern: /^(?! )(?!.* $).{0,10}$/,
+    message: '태그는 최대 10자, 시작/끝 공백 없이 입력 가능합니다.',
   },
 };
 
