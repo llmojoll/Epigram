@@ -39,7 +39,7 @@ export default function AddEpigram() {
           </p>
           <Textarea
             placeholder='500자 이내로 입력해주세요.'
-            className='w-full resize-none mt-2 lg:mt-6 h-[132px] lg:h-[148px]'
+            className='w-full mt-2 lg:mt-6 h-[132px] lg:h-[148px]'
             {...register('content', {
               required: '내용을 입력해주세요.',
               pattern: {
