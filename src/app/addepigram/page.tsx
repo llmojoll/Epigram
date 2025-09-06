@@ -1,7 +1,12 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
+import { createEpigram } from '@/api/epigram';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,25 +15,86 @@ import { epigramValidators } from '@/lib/validators';
 type FormValues = {
   content: string;
   author: string;
-  url: string;
-  tag: string;
-  authorRadio: 'custom' | 'unknown' | 'user';
+  referenceUrl?: string;
+  referenceTitle?: string;
+  tags: string[];
 };
 
 export default function AddEpigram() {
+  const router = useRouter();
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
+  const [selectedAuthor, setSelectedAuthor] = useState<'custom' | 'unknown' | 'user'>('user');
+
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-    watch,
   } = useForm<FormValues>({ mode: 'onBlur' });
 
+  useEffect(() => {
+    if (selectedAuthor === 'custom') {
+      setValue('author', '');
+    } else {
+      setValue('author', selectedAuthor);
+    }
+  }, [selectedAuthor, setValue]);
+
+  const mutation = useMutation({
+    mutationFn: async (data: FormValues) => {
+      console.log('Submitting data:', data);
+      return await createEpigram(data);
+    },
+    onSuccess: () => {
+      // router.push(`/epigram/${res.id}`);
+      router.push(`/`);
+    },
+    onError: (err) => {
+      console.error(err);
+      alert('에피그램 작성 실패');
+    },
+  });
+
   const onSubmit = (data: FormValues) => {
-    console.log('에피그램 작성 : ', data);
-    ///////////api 연결하기//////////////
+    const payload: FormValues = {
+      ...data,
+      tags: tags, // 빈 배열도 그대로 보내기
+      referenceUrl: data.referenceUrl?.trim() || undefined,
+      referenceTitle: data.referenceTitle?.trim() || undefined,
+    };
+    mutation.mutate(payload);
   };
 
-  const selectedAuthor = watch('authorRadio');
+  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const newTag = tagInput.trim();
+      if (!newTag) return;
+      if (newTag.length > 10) {
+        alert('태그는 최대 10자까지 입력할 수 있습니다.');
+        return;
+      }
+      if (tags.length >= 3) {
+        alert('태그는 최대 3개까지만 추가할 수 있습니다.');
+        return;
+      }
+      if (tags.includes(newTag)) {
+        alert('중복된 태그입니다.');
+        return;
+      }
+      const updatedTags = [...tags, newTag];
+      setTags(updatedTags);
+      setTagInput('');
+      setValue('tags', updatedTags);
+    }
+  };
+
+  const handleRemoveTag = (removeTag: string) => {
+    const updated = tags.filter((t) => t !== removeTag);
+    setTags(updated);
+    setValue('tags', updated);
+  };
 
   return (
     <div className='bg-white min-h-screen'>
@@ -59,38 +125,24 @@ export default function AddEpigram() {
           <p className='flex items-center text-md md:text-lg lg:text-xl font-semibold mt-10 lg:mt-[54px]'>
             저자 <span className='text-red-500 ml-1'>*</span>
           </p>
-          {/* 저자 라디오 버튼 */}
           <div className='mt-2 lg:mt-6 flex gap-4 lg:gap-6 text-lg lg:text-xl font-medium'>
-            <label className='flex items-center gap-2 cursor-pointer'>
-              <input
-                type='radio'
-                value='custom'
-                {...register('authorRadio')}
-                className='w-5 lg:w-6 h-5 lg:h-6 rounded-full '
-              />
-              <span>직접 입력</span>
-            </label>
-            <label className='flex items-center gap-2'>
-              <input
-                type='radio'
-                value='famous'
-                {...register('authorRadio')}
-                className='w-5 lg:w-6 h-5 lg:h-6 rounded-full '
-              />
-              <span>알 수 없음</span>
-            </label>
-            <label className='flex items-center gap-2'>
-              <input
-                type='radio'
-                value='unknown'
-                {...register('authorRadio')}
-                defaultChecked
-                className='w-5 lg:w-6 h-5 lg:h-6 rounded-full'
-              />
-              <span>본인</span>
-            </label>
+            {(['custom', 'unknown', 'user'] as const).map((val) => (
+              <label key={val} className='flex items-center gap-2 cursor-pointer'>
+                <input
+                  type='radio'
+                  value={val}
+                  checked={selectedAuthor === val}
+                  onChange={(e) =>
+                    setSelectedAuthor(e.target.value as 'custom' | 'unknown' | 'user')
+                  }
+                  className='w-5 lg:w-6 h-5 lg:h-6 rounded-full'
+                />
+                <span>
+                  {val === 'custom' ? '직접 입력' : val === 'unknown' ? '알 수 없음' : '본인'}
+                </span>
+              </label>
+            ))}
           </div>
-          {/* 직접 입력 고를시 */}
           {selectedAuthor === 'custom' && (
             <Input
               placeholder='저자 이름 입력'
@@ -113,34 +165,50 @@ export default function AddEpigram() {
           <Input
             placeholder='출처 제목 입력'
             className='bg-transparent h-11 lg:h-16 mt-3 lg:mt-4'
+            {...register('referenceTitle')}
           />
           <Input
             placeholder='URL (ex. https://www.website.com)'
             className='bg-transparent h-11 lg:h-16 mt-3 lg:mt-4'
-            {...register('url', {
+            {...register('referenceUrl', {
               pattern: {
                 value: epigramValidators.url.pattern,
                 message: epigramValidators.url.message,
               },
             })}
           />
-          {errors.url && <p className='text-red-500 mt-1'>{errors.url.message}</p>}
+          {errors.referenceUrl && (
+            <p className='text-red-500 mt-1'>{errors.referenceUrl.message}</p>
+          )}
 
           {/* 태그 */}
           <p className='flex items-center text-md md:text-lg lg:text-xl font-semibold mt-10 lg:mt-[54px]'>
             태그
           </p>
           <Input
-            placeholder='입력하여 태그 작성 (최대 10자)'
+            placeholder='Enter로 태그 추가 (최대 3개, 10자 제한)'
             className='bg-transparent h-11 lg:h-16 mt-3 lg:mt-4'
-            {...register('tag', {
-              pattern: {
-                value: epigramValidators.tag.pattern,
-                message: epigramValidators.tag.message,
-              },
-            })}
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={handleTagKeyDown}
           />
-          {errors.tag && <p className='text-red-500 mt-1'>{errors.tag.message}</p>}
+          <div className='flex gap-2 mt-2 flex-wrap'>
+            {tags.map((tag, idx) => (
+              <span
+                key={idx}
+                className='bg-gray-200 text-sm px-3 py-1 rounded-full flex items-center gap-2'
+              >
+                {tag}
+                <button
+                  type='button'
+                  onClick={() => handleRemoveTag(tag)}
+                  className='text-red-500 text-xs'
+                >
+                  ✕
+                </button>
+              </span>
+            ))}
+          </div>
 
           {/* 버튼 */}
           <Button
