@@ -32,35 +32,34 @@ export default function EpigramList() {
       <header className='flex justify-start w-full'>
         <p className='text-lg lg:text-2xl'>피드</p>
       </header>
-      <section className='grid grid-cols-1 md:grid-cols-2 gap-[30px] mt-6 lg:mt-[30px] w-full'>
+      <section className='grid grid-cols-1 md:grid-cols-2 gap-[30px] mt-6 lg:mt-[30px] w-full mx-6 md:mx-[72px] items-stretch'>
         {Array.isArray(epigrams?.list) &&
           epigrams.list.map((item: any) => (
-            <div
-              key={item.id}
-              className='bg-yellow-50 p-4 rounded-lg shadow-sm relative overflow-hidden'
-            >
-              {/* 줄무늬 노트 배경 */}
-              <div className='absolute inset-0 bg-[repeating-linear-gradient(white,white_28px,#dcdcdc_29px)] pointer-events-none'></div>
+            <div key={item.id} className='flex flex-col h-full'>
+              {/* 카드 */}
+              <div className='bg-white p-6 rounded-2xl shadow-sm relative flex flex-col overflow-hidden h-full'>
+                {/* 줄무늬 노트 배경*/}
+                <div className='absolute top-0 left-0 right-0 h-[calc(100%-0px)] md:h-[calc(100%-50px)] bg-[repeating-linear-gradient(white,white_20px,#dcdcdc_21px)] pointer-events-none'></div>
 
-              {/* 내용 */}
-              <p className='relative text-base lg:text-lg font-medium leading-7 line-clamp-3  text-md md:text-lg lg:text-2xl text-medium font-iropke'>
-                {item.content}
-              </p>
-              <p className='relative mt-2 text-sm text-gray-600'>- {item.author}-</p>
+                {/* 내용 */}
+                <p className='relative z-10 text-md md:text-lg lg:text-2xl font-medium leading-7 line-clamp-5 font-iropke'>
+                  {item.content}
+                </p>
+
+                {/* 저자 */}
+                <p className='relative z-10 mt-auto text-blue-400 text-right text-md md:text-lg lg:text-2xl'>
+                  - {item.author} -
+                </p>
+              </div>
 
               {/* 태그 */}
-              {item.tags?.length > 0 && (
-                <div className='relative mt-2 flex gap-2 flex-wrap'>
-                  {item.tags.map((tag: any) => (
-                    <span
-                      key={tag.id}
-                      className='bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full'
-                    >
-                      #{tag.name}
-                    </span>
-                  ))}
-                </div>
-              )}
+              <div className='flex justify-end mt-2 gap-2 flex-wrap min-h-[28px]'>
+                {item.tags?.map((tag: any) => (
+                  <span key={tag.id} className='text-blue-400 text-md md:text-lg lg:text-2xl'>
+                    #{tag.name}
+                  </span>
+                ))}
+              </div>
             </div>
           ))}
       </section>
