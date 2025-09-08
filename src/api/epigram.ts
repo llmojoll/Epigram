@@ -12,9 +12,22 @@ export const createEpigram = async (data: EpigramPayload) => {
   return res.data;
 };
 
-export async function getEpigrams() {
+export type Epigram = {
+  id: string;
+  content: string;
+  author: string;
+  tags?: { id: string; name: string }[];
+};
+export type EpigramsResponse = {
+  list: Epigram[];
+  nextCursor?: string;
+};
+export async function getEpigrams(params?: { cursor?: string; limit?: number }) {
   const res = await apiClient.get('/epigrams', {
-    params: { limit: 6 },
+    params: {
+      limit: params?.limit ?? 6,
+      cursor: params?.cursor,
+    },
   });
-  return res.data;
+  return res.data as EpigramsResponse;
 }
