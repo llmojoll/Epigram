@@ -1,5 +1,6 @@
 import './globals.css';
 import Gnb from '@/components/common/Gnb';
+import { ReactQueryProvider } from '@/QueryClientProvider';
 
 import { pretendard, iropke } from './fonts';
 
@@ -11,8 +12,10 @@ export default function RootLayout({
   return (
     <html lang='ko' className={`${pretendard.variable} ${iropke.variable}`}>
       <body>
-        <Gnb />
-        <main className='mx-auto max-w-[1200px]'>{children}</main>
+        <ReactQueryProvider>
+          <Gnb />
+          <main className='mx-auto max-w-[1200px]'>{children}</main>
+        </ReactQueryProvider>
       </body>
     </html>
   );
