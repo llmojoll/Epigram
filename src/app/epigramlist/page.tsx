@@ -26,12 +26,12 @@ export default function EpigramList() {
   const allEpigrams: Epigram[] = data?.pages.flatMap((page) => page.list) ?? [];
 
   return (
-    <div className='flex flex-col items-center w-[312px] md:w-[600px] lg:w-[1200px] mt-[32px] lg:mt-[120px] mb-[56px]'>
+    <div className='flex flex-col items-center min-w-[312px] md:w-[600px] lg:w-[1200px] mt-[32px] lg:mt-[120px] mb-[56px] mx-6 md:mx-auto'>
       <header className='flex justify-start w-full'>
         <p className='text-lg lg:text-2xl font-semibold'>피드</p>
       </header>
 
-      <section className='grid grid-cols-1 md:grid-cols-2 gap-[30px] mt-6 lg:mt-[30px] w-full mx-6 md:mx-[72px] items-stretch'>
+      <section className='grid grid-cols-1 md:grid-cols-2 gap-[30px] mt-6 lg:mt-[30px] w-full items-stretch'>
         {allEpigrams.map((item) => (
           <EpigramCard key={item.id} item={item} />
         ))}
