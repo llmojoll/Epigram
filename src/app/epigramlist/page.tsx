@@ -1,37 +1,18 @@
-import Image from 'next/image';
+import { getEpigrams } from '@/api/epigram';
 
-import { Button } from '@/components/ui/button';
+import EpigramListClient from './EpigramListClient';
 
-export default function EpigramList() {
-  return (
-    <div className='flex justify-center items-center flex-col m-auto w-[312px] md:w-[600px] lg:w-[1200px] mt-[32px] lg:mt-[120px] m-auto mb-[56px] '>
-      <header className='flex justify-start w-full'>
-        <p className='text-lg lg:text-2xl'>피드</p>
-      </header>
-      <section>
-        <div>에피그램 리스트</div>
-      </section>
-      <footer>
-        <div className='mt-[56px] lg:mt[80px]'>
-          <Button
-            variant='line200'
-            className='w-[153px] lg:w-[238px] h-[48px] lg:h-[56px] bg-transparent border-2 border-blue-200 rounded-full text-md lg:text-xl font-medium'
-          >
-            + 에피그램 더보기
-          </Button>
-        </div>
-        <div className='fixed flex items-end flex-col bottom-10 right-10 '>
-          <Button variant='blue900' size='md'>
-            + 에피그램 만들기
-          </Button>
-          <Button
-            variant='blue900'
-            className='w-[48px] lg:w-[64px] h-[48px] lg:h-[64px] rounded-full text-white mt-2'
-          >
-            <Image src='/pageupbtn.svg' width={20} height={20} alt='페이지 최상단으로 가는 버튼' />
-          </Button>
-        </div>
-      </footer>
-    </div>
-  );
+export const revalidate = 60; // ISR: 60초마다 페이지 재생성
+
+export default async function EpigramsPage() {
+  // 서버에서 첫 페이지 불러오기 (SEO + 초기 렌더용)
+  const firstPage = await getEpigrams({ cursor: undefined, limit: 6 });
+
+  // React Query의 initialData 형태와 유사하게 구성
+  const initialData = {
+    pages: [firstPage],
+    pageParams: [undefined],
+  };
+
+  return <EpigramListClient initialData={initialData} />;
 }
