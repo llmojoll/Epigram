@@ -1,16 +1,15 @@
+import { getEpigramById } from '@/api/epigrams/[id]';
+
+import EpigramDetailClient from './EpigramDetailClient';
+
+export const revalidate = 60; // ISR: 60초마다 페이지 재생성
+
 interface EpigramPageProps {
-  params: {
-    id: string;
-  };
+  params: { id: string };
 }
 
-export default function EpigramPage({ params }: EpigramPageProps) {
-  const { id } = params;
+export default async function EpigramPage({ params }: EpigramPageProps) {
+  const epigram = await getEpigramById(params.id); // 서버에서 데이터 패칭
 
-  return (
-    <main className='p-8'>
-      <h1 className='text-2xl font-bold'>에피그램 상세 페이지</h1>
-      <p>현재 보고 있는 에피그램 ID: {id}</p>
-    </main>
-  );
+  return <EpigramDetailClient initialData={epigram} />;
 }
