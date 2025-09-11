@@ -9,7 +9,7 @@ export interface Epigram {
   referenceTitle?: string;
 }
 
-export const getEpigramById = async (id: string): Promise<Epigram> => {
+export const getEpigramById = async (id: number): Promise<Epigram> => {
   const res = await apiClient.get(`/epigrams/${id}`);
   return res.data;
 };

@@ -34,7 +34,7 @@ export interface CommentId {
   cursor?: number;
 }
 export const getComments = async ({ epigramId, limit = 10, cursor }: CommentId) => {
-  const res = await apiClient.get<CommentsResponse>('/comments', {
+  const res = await apiClient.get<CommentsResponse>(`/epigrams/${epigramId}/comments`, {
     params: { epigramId, limit, cursor },
   });
   return res.data;

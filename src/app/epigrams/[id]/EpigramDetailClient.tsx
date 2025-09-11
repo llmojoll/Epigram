@@ -3,14 +3,17 @@
 import { useState } from 'react';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Image from 'next/image';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 import { CommentsResponse, getComments, postComment } from '@/api/comment';
 import { Epigram } from '@/api/epigram';
 import Likeicon from '@/assets/likeicon.svg';
 import Linkbtn from '@/assets/linkbtn.svg';
+import UserIcon from '@/assets/user.svg';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { timeAgo } from '@/lib/TimeAgo';
 
 type CommentFormValues = {
   content: string;
@@ -40,6 +43,7 @@ export default function EpigramDetailClient({ initialData }: Props) {
   const onSubmit: SubmitHandler<CommentFormValues> = (data) => {
     if (!data.content.trim()) return;
     commentMutation.mutate(data.content);
+    console.log(epigram.id);
     reset();
   };
   // 댓글 작성 mutation
@@ -60,6 +64,7 @@ export default function EpigramDetailClient({ initialData }: Props) {
 
   return (
     <main className=''>
+      {/* 피드 */}
       <div className='w-full bg-[repeating-linear-gradient(white,white_25px,#ABB8CE_26px)] h-[calc(100%-0px)]'>
         <div className='mx-auto pt-10 max-w-[312px] md:max-w-[384px] lg:max-w-[640px]'>
           {epigram.tags?.map((tag) => (
@@ -83,7 +88,6 @@ export default function EpigramDetailClient({ initialData }: Props) {
               <Likeicon className='!w-[20px] lg:!w-[32px] !h-[20px] lg:!h-[32px] m-1 lg:m-2' />
               <p>{likes}</p>
             </Button>
-
             <Button
               variant='line100'
               className='w-[130px] lg:w-[181px] h-9 lg:h-12 text-md lg:text-xl font-medium rounded-full'
@@ -94,26 +98,69 @@ export default function EpigramDetailClient({ initialData }: Props) {
           </div>
         </div>
       </div>
+
+      {/* 댓글 */}
       <div className='mx-auto pt-10 max-w-[312px] md:max-w-[384px] lg:max-w-[640px]'>
-        <p>댓글</p>
-        <div className='flex items-center'>
-          <div>프로필이미지</div>
-          <form onSubmit={handleSubmit(onSubmit)}>
+        <p>댓글 ({commentsResponse?.totalCount ?? 0})</p>
+        <div className='flex items-center mt-4 lg:mt-6'>
+          <div>유저이미지</div>
+          <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
             <Textarea
               placeholder='100자 이내로 입력해주세요.'
               variant='outlined'
               {...register('content')}
+              className='h-[66px md:h-[80px] lg:h-[104px]'
             />
-            <Button type='submit' className='self-end'>
-              댓글 작성
-            </Button>
+            <div className='flex justify-end'>
+              <Button type='submit' className='lg:w-[60px] lg:h-[44px] mt-2 lg:mt-4' size='xs'>
+                저장
+              </Button>
+            </div>
           </form>
         </div>
-        <div className='flex flex-col gap-4'>
+        <div className='flex flex-col mt-3 md:mt-8 lg:mt-10'>
           {commentsResponse?.list.map((comment) => (
-            <div key={comment.id} className='p-2 border rounded'>
-              <p className='font-semibold'>{comment.writer.nickname}</p>
-              <p>{comment.content}</p>
+            <div key={comment.id}>
+              <hr className='w-full' />
+              {/* 컨테이너 */}
+              <div key={comment.id} className='flex rounded mx-6 my-4 md:my-6 lg:my-9'>
+                {comment.writer.image ? (
+                  <Image
+                    key={comment.id}
+                    src={comment.writer.image}
+                    alt={`${comment.writer.nickname}의 프로필 이미지`}
+                    width={24}
+                    height={24}
+                    className='rounded-full'
+                  />
+                ) : (
+                  <UserIcon className='w-6 h-6 rounded-full text-gray-300' />
+                )}
+                <div className='flex flex-col ml-4 w-full'>
+                  <div className='flex justify-between items-center'>
+                    <div className='flex items-center'>
+                      <p className='text-xs md:text-md lg:text-lg font-regular text-black-300'>
+                        {comment.writer.nickname}
+                      </p>
+                      <p className='text-xs md:text-md lg:text-lg font-regular text-black-300 ml-2'>
+                        {timeAgo(comment.updatedAt)}
+                      </p>
+                    </div>
+
+                    <div className='flex gap-2'>
+                      <p className='cursor-pointer text-xs md:text-md lg:text-lg font-regular text-black-600 underline'>
+                        수정
+                      </p>
+                      <p className='cursor-pointer text-xs md:text-md lg:text-lg font-regular text-red-500 underline'>
+                        삭제
+                      </p>
+                    </div>
+                  </div>
+                  <p className='mt-2 md:mt-3 lg:mt-4 text-md md:text-lg lg:text-xl font-regular text-black-700'>
+                    {comment.content}
+                  </p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
