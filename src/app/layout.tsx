@@ -14,7 +14,9 @@ export default function RootLayout({
       <body>
         <ReactQueryProvider>
           <Gnb />
-          <main className='mx-auto max-w-[1200px]'>{children}</main>
+          <main className='w-full'>
+            <div className='mx-auto'>{children}</div>
+          </main>
         </ReactQueryProvider>
       </body>
     </html>
