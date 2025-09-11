@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
-import { postComment } from '@/api/comment';
+import { CommentsResponse, getComments, postComment } from '@/api/comment';
 import { Epigram } from '@/api/epigram';
 import Likeicon from '@/assets/likeicon.svg';
 import Linkbtn from '@/assets/linkbtn.svg';
@@ -21,6 +22,7 @@ interface Props {
 export default function EpigramDetailClient({ initialData }: Props) {
   const [epigram] = useState(initialData);
   const [likes, setLikes] = useState(0);
+  const queryClient = useQueryClient();
 
   const { register, handleSubmit, reset } = useForm<CommentFormValues>({
     defaultValues: { content: '' },
@@ -28,20 +30,33 @@ export default function EpigramDetailClient({ initialData }: Props) {
 
   const handleLike = () => setLikes((prev) => prev + 1);
 
-  const onSubmit: SubmitHandler<CommentFormValues> = async (data) => {
-    try {
-      await postComment({
-        epigramId: Number(epigram.id),
-        content: data.content,
-        isPrivate: false,
-      });
-      reset(); // 제출 후 입력 초기화
-      alert('댓글등록');
-    } catch (error) {
-      console.error(error);
-      alert('댓글 등록 실패');
-    }
+  //댓글 조회
+  const { data: commentsResponse } = useQuery<CommentsResponse>({
+    queryKey: ['comments', epigram.id],
+    queryFn: () => getComments({ epigramId: Number(epigram.id), limit: 5 }),
+    refetchOnWindowFocus: false,
+  });
+
+  const onSubmit: SubmitHandler<CommentFormValues> = (data) => {
+    if (!data.content.trim()) return;
+    commentMutation.mutate(data.content);
+    reset();
   };
+  // 댓글 작성 mutation
+  const commentMutation = useMutation({
+    mutationFn: (content: string) =>
+      postComment({
+        epigramId: epigram.id,
+        isPrivate: false,
+        content,
+      }),
+    onSuccess: () => {
+      // 작성 후 댓글 목록 갱신
+      queryClient.invalidateQueries({
+        queryKey: ['comments', Number(epigram.id)],
+      });
+    },
+  });
 
   return (
     <main className=''>
@@ -87,12 +102,20 @@ export default function EpigramDetailClient({ initialData }: Props) {
             <Textarea
               placeholder='100자 이내로 입력해주세요.'
               variant='outlined'
-              {...register('content', { required: true, maxLength: 100 })}
+              {...register('content')}
             />
             <Button type='submit' className='self-end'>
               댓글 작성
             </Button>
           </form>
+        </div>
+        <div className='flex flex-col gap-4'>
+          {commentsResponse?.list.map((comment) => (
+            <div key={comment.id} className='p-2 border rounded'>
+              <p className='font-semibold'>{comment.writer.nickname}</p>
+              <p>{comment.content}</p>
+            </div>
+          ))}
         </div>
       </div>
     </main>

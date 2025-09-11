@@ -2,7 +2,7 @@ import { apiClient } from '@/lib/apiClient';
 
 // api/epigram.ts
 export interface Epigram {
-  id: string;
+  id: number;
   content: string;
   author: string;
   referenceUrl?: string;

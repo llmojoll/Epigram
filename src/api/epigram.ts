@@ -13,7 +13,7 @@ export const createEpigram = async (data: EpigramPayload) => {
 };
 
 export type Epigram = {
-  id: string;
+  id: number;
   content: string;
   author: string;
   tags?: { id: string; name: string }[];
