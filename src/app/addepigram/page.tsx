@@ -46,9 +46,8 @@ export default function AddEpigram() {
       console.log('Submitting data:', data);
       return await createEpigram(data);
     },
-    onSuccess: () => {
-      // router.push(`/epigram/${res.id}`);
-      router.push(`/`);
+    onSuccess: (data) => {
+      router.push(`/epigrams/${data.id}`);
     },
     onError: (err) => {
       console.error(err);
