@@ -14,6 +14,7 @@ import UserIcon from '@/assets/user.svg';
 import DeleteDialog from '@/components/modal/DeleteModal';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/context/AuthContext';
 import { timeAgo } from '@/lib/TimeAgo';
 
 type CommentFormValues = {
@@ -27,6 +28,7 @@ export default function EpigramDetailClient({ initialData }: Props) {
   const [epigram] = useState(initialData);
   const [likes, setLikes] = useState(0);
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const { register, handleSubmit, reset } = useForm<CommentFormValues>({
     defaultValues: { content: '' },
@@ -159,18 +161,20 @@ export default function EpigramDetailClient({ initialData }: Props) {
                         {timeAgo(comment.updatedAt)}
                       </p>
                     </div>
-                    <div className='flex gap-2'>
-                      <p className='cursor-pointer text-xs md:text-md lg:text-lg font-regular text-black-600 underline'>
-                        수정
-                      </p>
-                      {/* 댓글 삭제 모달 */}
-                      <DeleteDialog
-                        id={comment.id}
-                        description='댓글을 정말 삭제하시겠어요?'
-                        description2='삭제 후 복구할 수 없어요.'
-                        onDelete={() => handeleDeleteComment(comment.id)}
-                      />
-                    </div>
+                    {user && comment.writer.id === user.id && (
+                      <div className='flex gap-2'>
+                        <p className='cursor-pointer text-xs md:text-md lg:text-lg font-regular text-black-600 underline'>
+                          수정
+                        </p>
+                        {/* 댓글 삭제 모달 */}
+                        <DeleteDialog
+                          id={comment.id}
+                          description='댓글을 정말 삭제하시겠어요?'
+                          description2='삭제 후 복구할 수 없어요.'
+                          onDelete={() => handeleDeleteComment(comment.id)}
+                        />
+                      </div>
+                    )}
                   </div>
                   <p className='mt-2 md:mt-3 lg:mt-4 text-md md:text-lg lg:text-xl font-regular text-black-700'>
                     {comment.content}
