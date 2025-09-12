@@ -39,3 +39,8 @@ export const getComments = async ({ epigramId, limit = 10, cursor }: CommentId) 
   });
   return res.data;
 };
+
+export const deleteComment = async (commentId: number) => {
+  const res = await apiClient.delete(`/comments/${commentId}`);
+  return res.data;
+};

@@ -6,11 +6,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
-import { CommentsResponse, getComments, postComment } from '@/api/comment';
+import { CommentsResponse, deleteComment, getComments, postComment } from '@/api/comment';
 import { Epigram } from '@/api/epigram';
 import Likeicon from '@/assets/likeicon.svg';
 import Linkbtn from '@/assets/linkbtn.svg';
 import UserIcon from '@/assets/user.svg';
+import DeleteDialog from '@/components/modal/DeleteModal';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { timeAgo } from '@/lib/TimeAgo';
@@ -61,6 +62,18 @@ export default function EpigramDetailClient({ initialData }: Props) {
       });
     },
   });
+  //댓글 삭제 mutation
+  const deleteCommentMutation = useMutation({
+    mutationFn: (commentId: number) => deleteComment(commentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['comments', Number(epigram.id)],
+      });
+    },
+  });
+  const handeleDeleteComment = (commentId: number) => {
+    deleteCommentMutation.mutate(commentId);
+  };
 
   return (
     <main className=''>
@@ -146,14 +159,17 @@ export default function EpigramDetailClient({ initialData }: Props) {
                         {timeAgo(comment.updatedAt)}
                       </p>
                     </div>
-
                     <div className='flex gap-2'>
                       <p className='cursor-pointer text-xs md:text-md lg:text-lg font-regular text-black-600 underline'>
                         수정
                       </p>
-                      <p className='cursor-pointer text-xs md:text-md lg:text-lg font-regular text-red-500 underline'>
-                        삭제
-                      </p>
+                      {/* 댓글 삭제 모달 */}
+                      <DeleteDialog
+                        id={comment.id}
+                        description='댓글을 정말 삭제하시겠어요?'
+                        description2='삭제 후 복구할 수 없어요.'
+                        onDelete={() => handeleDeleteComment(comment.id)}
+                      />
                     </div>
                   </div>
                   <p className='mt-2 md:mt-3 lg:mt-4 text-md md:text-lg lg:text-xl font-regular text-black-700'>
