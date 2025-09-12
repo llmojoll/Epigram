@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { getEpigrams, EpigramsResponse, Epigram } from '@/api/epigram';
 import EpigramCard from '@/components/card/EpigramCard';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
 
 type Props = {
   initialData: {
@@ -17,6 +18,7 @@ type Props = {
 
 export default function EpigramListClient({ initialData }: Props) {
   const router = useRouter();
+  const { isLoggedIn } = useAuth();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } =
     useInfiniteQuery<EpigramsResponse, Error>({
@@ -34,6 +36,15 @@ export default function EpigramListClient({ initialData }: Props) {
   if (isError) return <div className='mt-20 text-red-500'>에피그램을 불러오지 못했습니다.</div>;
 
   const allEpigrams: Epigram[] = data?.pages.flatMap((page) => page.list) ?? [];
+
+  const handleAddEpigram = () => {
+    if (!isLoggedIn) {
+      alert('로그인 후 이용 가능합니다.');
+      router.push('/login');
+      return;
+    }
+    router.push('/addepigram');
+  };
 
   return (
     <div className='flex flex-col items-center min-w-[312px] md:w-[600px] lg:w-[1200px] mt-[32px] lg:mt-[120px] mb-[56px] mx-6 md:mx-auto'>
@@ -63,7 +74,7 @@ export default function EpigramListClient({ initialData }: Props) {
 
       <footer>
         <div className='fixed flex items-end flex-col bottom-10 right-10 z-30'>
-          <Button variant='blue900' size='md' onClick={() => router.push('/addepigram')}>
+          <Button variant='blue900' size='md' onClick={handleAddEpigram}>
             + 에피그램 만들기
           </Button>
           <Button
