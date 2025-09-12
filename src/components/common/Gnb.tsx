@@ -6,9 +6,19 @@ import { useRouter } from 'next/navigation';
 import GnbMenu from '@/assets/gnb-menu.svg';
 import UserIcon from '@/assets/user.svg';
 import Logo from '@/components/common/Logo';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Gnb() {
   const router = useRouter();
+  const { isLoggedIn, user } = useAuth();
+
+  const handleRightButtonClick = () => {
+    if (isLoggedIn) {
+      router.push('/mypage');
+    } else {
+      router.push('/login');
+    }
+  };
 
   return (
     // <nav className='flex items-center justify-center h-16 px-6 border-b border-gray-200 bg-white'>
@@ -35,9 +45,11 @@ export default function Gnb() {
 
       {/* 오른쪽 그룹 */}
       <div className='flex items-center ml-auto'>
-        <button className='flex items-center' onClick={() => router.push('/login')}>
+        <button className='flex items-center' onClick={handleRightButtonClick}>
           <UserIcon className='w-4 lg:w-6 h-4 lg:h-6 mr-[6px] text-gray-300' />
-          <p className='text-sm lg:text-md font-medium text-gray-300'>김코드</p>
+          <p className='text-sm lg:text-md font-medium text-gray-300'>
+            {isLoggedIn && user ? user.nickname : '김코드'}
+          </p>
         </button>
       </div>
     </nav>
