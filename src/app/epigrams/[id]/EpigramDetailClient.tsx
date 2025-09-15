@@ -3,77 +3,55 @@
 import { useState } from 'react';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import Image from 'next/image';
-import { useForm, SubmitHandler } from 'react-hook-form';
 
-import { CommentsResponse, deleteComment, getComments, postComment } from '@/api/comment';
+import { deleteComment, postComment } from '@/api/comment';
 import { Epigram, getEpigramById, likeEpigram, unlikeEpigram } from '@/api/epigram';
 import Likeicon from '@/assets/likeicon.svg';
 import Linkbtn from '@/assets/linkbtn.svg';
-import UserIcon from '@/assets/user.svg';
-import DeleteDialog from '@/components/modal/DeleteModal';
+import CommentForm from '@/components/comment/CommentForm';
+import CommentList from '@/components/comment/CommentList';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { useAuth } from '@/context/AuthContext';
-import { timeAgo } from '@/lib/TimeAgo';
 
-type CommentFormValues = { content: string };
 interface Props {
   epigramId: number;
 }
 
 export default function EpigramDetailClient({ epigramId }: Props) {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
   const [copied, setCopied] = useState(false);
 
-  //epigram 상세조회
+  // epigram 상세조회
   const { data: epigram, refetch: refetchEpigram } = useQuery<Epigram>({
     queryKey: ['epigram', epigramId],
     queryFn: () => getEpigramById(epigramId),
   });
 
-  const { register, handleSubmit, reset } = useForm<CommentFormValues>({
-    defaultValues: { content: '' },
-  });
-
-  //댓글 조회
-  const { data: commentsResponse } = useQuery<CommentsResponse>({
-    queryKey: ['comments', epigramId],
-    queryFn: () => getComments({ epigramId, limit: 5 }),
-    enabled: !!epigram,
-  });
-
-  const onSubmit: SubmitHandler<CommentFormValues> = (data) => {
-    if (!data.content.trim()) return;
-    commentMutation.mutate(data.content);
-    reset();
-  };
   // 댓글 작성 mutation
   const commentMutation = useMutation({
     mutationFn: (content: string) => postComment({ epigramId, isPrivate: false, content }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comments', epigramId] }),
   });
-  //댓글 삭제 mutation
+
+  // 댓글 삭제 mutation
   const deleteCommentMutation = useMutation({
     mutationFn: (commentId: number) => deleteComment(commentId),
-    onSuccess: () => {
+    onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: ['comments', Number(epigramId)],
-      });
-    },
+      }),
   });
-  const handeleDeleteComment = (commentId: number) => {
+
+  const handleDeleteComment = (commentId: number) => {
     deleteCommentMutation.mutate(commentId);
   };
 
-  //좋아요 mutation
+  // 좋아요 mutation
   const likeMutation = useMutation({
     mutationFn: () => (epigram?.isLiked ? unlikeEpigram(epigram.id) : likeEpigram(epigram!.id)),
     onSuccess: () => refetchEpigram(),
   });
 
-  //url 복사
+  // url 복사
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -85,8 +63,9 @@ export default function EpigramDetailClient({ epigramId }: Props) {
   };
 
   if (!epigram) return <p>로딩 중...</p>;
+
   return (
-    <main className=''>
+    <main>
       {/* 피드 */}
       <div className='w-full bg-[repeating-linear-gradient(white,white_25px,#ABB8CE_26px)] h-[calc(100%-0px)]'>
         <div className='mx-auto pt-10 max-w-[312px] md:max-w-[384px] lg:max-w-[640px]'>
@@ -126,74 +105,12 @@ export default function EpigramDetailClient({ epigramId }: Props) {
 
       {/* 댓글 */}
       <div className='mx-auto pt-10 max-w-[312px] md:max-w-[384px] lg:max-w-[640px]'>
-        <p>댓글 ({commentsResponse?.totalCount ?? 0})</p>
+        <p>댓글</p>
         <div className='flex items-center mt-4 lg:mt-6'>
           <div>유저이미지</div>
-          <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
-            <Textarea
-              placeholder='100자 이내로 입력해주세요.'
-              variant='outlined'
-              {...register('content')}
-              className='h-[66px md:h-[80px] lg:h-[104px]'
-            />
-            <div className='flex justify-end'>
-              <Button type='submit' className='lg:w-[60px] lg:h-[44px] mt-2 lg:mt-4' size='xs'>
-                저장
-              </Button>
-            </div>
-          </form>
+          <CommentForm onSubmit={(content) => commentMutation.mutate(content)} />
         </div>
-        <div className='flex flex-col mt-3 md:mt-8 lg:mt-10'>
-          {commentsResponse?.list.map((comment) => (
-            <div key={comment.id}>
-              <hr className='w-full' />
-              {/* 컨테이너 */}
-              <div key={comment.id} className='flex rounded mx-6 my-4 md:my-6 lg:my-9'>
-                {comment.writer.image ? (
-                  <Image
-                    key={comment.id}
-                    src={comment.writer.image}
-                    alt={`${comment.writer.nickname}의 프로필 이미지`}
-                    width={24}
-                    height={24}
-                    className='rounded-full'
-                  />
-                ) : (
-                  <UserIcon className='w-6 h-6 rounded-full text-gray-300' />
-                )}
-                <div className='flex flex-col ml-4 w-full'>
-                  <div className='flex justify-between items-center'>
-                    <div className='flex items-center'>
-                      <p className='text-xs md:text-md lg:text-lg font-regular text-black-300'>
-                        {comment.writer.nickname}
-                      </p>
-                      <p className='text-xs md:text-md lg:text-lg font-regular text-black-300 ml-2'>
-                        {timeAgo(comment.updatedAt)}
-                      </p>
-                    </div>
-                    {user && comment.writer.id === user.id && (
-                      <div className='flex gap-2'>
-                        <p className='cursor-pointer text-xs md:text-md lg:text-lg font-regular text-black-600 underline'>
-                          수정
-                        </p>
-                        {/* 댓글 삭제 모달 */}
-                        <DeleteDialog
-                          id={comment.id}
-                          description='댓글을 정말 삭제하시겠어요?'
-                          description2='삭제 후 복구할 수 없어요.'
-                          onDelete={() => handeleDeleteComment(comment.id)}
-                        />
-                      </div>
-                    )}
-                  </div>
-                  <p className='mt-2 md:mt-3 lg:mt-4 text-md md:text-lg lg:text-xl font-regular text-black-700'>
-                    {comment.content}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <CommentList epigramId={epigramId} onDelete={handleDeleteComment} />
       </div>
     </main>
   );
