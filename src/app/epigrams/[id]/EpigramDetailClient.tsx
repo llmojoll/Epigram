@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 import { CommentsResponse, deleteComment, getComments, postComment } from '@/api/comment';
-import { Epigram } from '@/api/epigram';
+import { Epigram, likeEpigram, unlikeEpigram } from '@/api/epigram';
 import Likeicon from '@/assets/likeicon.svg';
 import Linkbtn from '@/assets/linkbtn.svg';
 import UserIcon from '@/assets/user.svg';
@@ -25,8 +25,7 @@ interface Props {
 }
 
 export default function EpigramDetailClient({ initialData }: Props) {
-  const [epigram] = useState(initialData);
-  const [likes, setLikes] = useState(0);
+  const [epigram, setEpigram] = useState(initialData);
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [copied, setCopied] = useState(false);
@@ -34,8 +33,6 @@ export default function EpigramDetailClient({ initialData }: Props) {
   const { register, handleSubmit, reset } = useForm<CommentFormValues>({
     defaultValues: { content: '' },
   });
-
-  const handleLike = () => setLikes((prev) => prev + 1);
 
   //댓글 조회
   const { data: commentsResponse } = useQuery<CommentsResponse>({
@@ -89,6 +86,27 @@ export default function EpigramDetailClient({ initialData }: Props) {
     }
   };
 
+  //좋아요 mutation
+  const likeMutation = useMutation({
+    mutationFn: async () => {
+      if (epigram.isLiked) {
+        return unlikeEpigram(epigram.id);
+      } else {
+        return likeEpigram(epigram.id);
+      }
+    },
+    onSuccess: (data) => {
+      setEpigram((prev) => ({
+        ...prev,
+        likeCount: data.likeCount,
+        isLiked: data.isLiked,
+      }));
+    },
+  });
+  const handleLike = () => {
+    likeMutation.mutate();
+  };
+
   return (
     <main className=''>
       {/* 피드 */}
@@ -110,10 +128,11 @@ export default function EpigramDetailClient({ initialData }: Props) {
               variant='black600'
               size='sm'
               onClick={handleLike}
+              disabled={likeMutation.isPending}
               className='flex items-center rounded-full gap-0'
             >
               <Likeicon className='!w-[20px] lg:!w-[32px] !h-[20px] lg:!h-[32px] m-1 lg:m-2' />
-              <p>{likes}</p>
+              <p>{epigram.likeCount}</p>
             </Button>
             <Button
               variant='line100'
