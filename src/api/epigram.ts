@@ -37,6 +37,12 @@ export async function getEpigrams(params?: { cursor?: string; limit?: number }) 
   return res.data as EpigramsResponse;
 }
 
+//epigrams 상세조회 데이터
+export const getEpigramById = async (id: number): Promise<Epigram> => {
+  const res = await apiClient.get(`/epigrams/${id}`);
+  return res.data;
+};
+
 //좋아요
 export const likeEpigram = async (id: number): Promise<Epigram> => {
   const res = await apiClient.post(`/epigrams/${id}/like`);
