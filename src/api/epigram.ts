@@ -19,6 +19,7 @@ export type Epigram = {
   content: string;
   author: string;
   tags?: { id: string; name: string }[];
+  writerId: number;
 
   likeCount: number;
   isLiked: boolean;
@@ -36,6 +37,12 @@ export async function getEpigrams(params?: { cursor?: string; limit?: number }) 
   });
   return res.data as EpigramsResponse;
 }
+
+//epigram 삭제
+export const deleteEpigram = async (id: number) => {
+  const res = await apiClient.delete(`/epigrams/${id}`);
+  return res.data;
+};
 
 //epigrams 상세조회 데이터
 export const getEpigramById = async (id: number): Promise<Epigram> => {
