@@ -49,6 +49,7 @@ export default function CommentItem({ comment, onDelete }: Props) {
                   description='댓글을 정말 삭제하시겠어요?'
                   description2='삭제 후 복구할 수 없어요.'
                   onDelete={() => onDelete?.(comment.id)}
+                  triggerText='삭제'
                 />
               </div>
             )}

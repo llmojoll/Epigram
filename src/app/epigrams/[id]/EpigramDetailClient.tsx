@@ -10,7 +10,9 @@ import Likeicon from '@/assets/likeicon.svg';
 import Linkbtn from '@/assets/linkbtn.svg';
 import CommentForm from '@/components/comment/CommentForm';
 import CommentList from '@/components/comment/CommentList';
+import EpigramDropdown from '@/components/dropdown/EpigramDropdown';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
 
 interface Props {
   epigramId: number;
@@ -19,6 +21,7 @@ interface Props {
 export default function EpigramDetailClient({ epigramId }: Props) {
   const queryClient = useQueryClient();
   const [copied, setCopied] = useState(false);
+  const { user } = useAuth();
 
   // epigram 상세조회
   const { data: epigram, refetch: refetchEpigram } = useQuery<Epigram>({
@@ -67,13 +70,19 @@ export default function EpigramDetailClient({ epigramId }: Props) {
   return (
     <main>
       {/* 피드 */}
-      <div className='w-full bg-[repeating-linear-gradient(white,white_25px,#ABB8CE_26px)] h-[calc(100%-0px)]'>
+      <div className='w-full bg-[repeating-linear-gradient(white,white_25px,#ABB8CE_26px)] lg:bg-[repeating-linear-gradient(white,white_35px,#ABB8CE_36px)] h-[calc(100%-0px)]'>
         <div className='mx-auto pt-10 max-w-[312px] md:max-w-[384px] lg:max-w-[640px]'>
-          {epigram.tags?.map((tag) => (
-            <span key={tag.id} className='text-blue-400 text-md md:text-lg lg:text-xl mr-2'>
-              #{tag.name}
-            </span>
-          ))}
+          <div className='flex justify-between items-center'>
+            <div>
+              {epigram.tags?.map((tag) => (
+                <span key={tag.id} className='text-blue-400 text-md md:text-lg lg:text-xl mr-2'>
+                  #{tag.name}
+                </span>
+              ))}
+            </div>
+
+            {user?.id === epigram.writerId && <EpigramDropdown epigramId={epigram.id} />}
+          </div>
           <p className='font-iropke text-black-700 text-2xl lg:text-3xl font-regular mt-4 md:mt-6 lg:mt-8'>
             {epigram.content}
           </p>
