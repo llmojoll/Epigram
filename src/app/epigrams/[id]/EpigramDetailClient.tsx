@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 import { CommentsResponse, deleteComment, getComments, postComment } from '@/api/comment';
-import { Epigram } from '@/api/epigram';
+import { Epigram, getEpigramById, likeEpigram, unlikeEpigram } from '@/api/epigram';
 import Likeicon from '@/assets/likeicon.svg';
 import Linkbtn from '@/assets/linkbtn.svg';
 import UserIcon from '@/assets/user.svg';
@@ -17,59 +17,49 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/context/AuthContext';
 import { timeAgo } from '@/lib/TimeAgo';
 
-type CommentFormValues = {
-  content: string;
-};
+type CommentFormValues = { content: string };
 interface Props {
-  initialData: Epigram;
+  epigramId: number;
 }
 
-export default function EpigramDetailClient({ initialData }: Props) {
-  const [epigram] = useState(initialData);
-  const [likes, setLikes] = useState(0);
+export default function EpigramDetailClient({ epigramId }: Props) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const [copied, setCopied] = useState(false);
+
+  //epigram 상세조회
+  const { data: epigram, refetch: refetchEpigram } = useQuery<Epigram>({
+    queryKey: ['epigram', epigramId],
+    queryFn: () => getEpigramById(epigramId),
+  });
 
   const { register, handleSubmit, reset } = useForm<CommentFormValues>({
     defaultValues: { content: '' },
   });
 
-  const handleLike = () => setLikes((prev) => prev + 1);
-
   //댓글 조회
   const { data: commentsResponse } = useQuery<CommentsResponse>({
-    queryKey: ['comments', epigram.id],
-    queryFn: () => getComments({ epigramId: Number(epigram.id), limit: 5 }),
-    refetchOnWindowFocus: false,
+    queryKey: ['comments', epigramId],
+    queryFn: () => getComments({ epigramId, limit: 5 }),
+    enabled: !!epigram,
   });
 
   const onSubmit: SubmitHandler<CommentFormValues> = (data) => {
     if (!data.content.trim()) return;
     commentMutation.mutate(data.content);
-    console.log(epigram.id);
     reset();
   };
   // 댓글 작성 mutation
   const commentMutation = useMutation({
-    mutationFn: (content: string) =>
-      postComment({
-        epigramId: epigram.id,
-        isPrivate: false,
-        content,
-      }),
-    onSuccess: () => {
-      // 작성 후 댓글 목록 갱신
-      queryClient.invalidateQueries({
-        queryKey: ['comments', Number(epigram.id)],
-      });
-    },
+    mutationFn: (content: string) => postComment({ epigramId, isPrivate: false, content }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comments', epigramId] }),
   });
   //댓글 삭제 mutation
   const deleteCommentMutation = useMutation({
     mutationFn: (commentId: number) => deleteComment(commentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['comments', Number(epigram.id)],
+        queryKey: ['comments', Number(epigramId)],
       });
     },
   });
@@ -77,6 +67,24 @@ export default function EpigramDetailClient({ initialData }: Props) {
     deleteCommentMutation.mutate(commentId);
   };
 
+  //좋아요 mutation
+  const likeMutation = useMutation({
+    mutationFn: () => (epigram?.isLiked ? unlikeEpigram(epigram.id) : likeEpigram(epigram!.id)),
+    onSuccess: () => refetchEpigram(),
+  });
+
+  //url 복사
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.log('URL 복사 실패', err);
+    }
+  };
+
+  if (!epigram) return <p>로딩 중...</p>;
   return (
     <main className=''>
       {/* 피드 */}
@@ -97,17 +105,19 @@ export default function EpigramDetailClient({ initialData }: Props) {
             <Button
               variant='black600'
               size='sm'
-              onClick={handleLike}
+              onClick={() => likeMutation.mutate()}
+              disabled={likeMutation.isPending}
               className='flex items-center rounded-full gap-0'
             >
               <Likeicon className='!w-[20px] lg:!w-[32px] !h-[20px] lg:!h-[32px] m-1 lg:m-2' />
-              <p>{likes}</p>
+              <p>{epigram.likeCount}</p>
             </Button>
             <Button
               variant='line100'
               className='w-[130px] lg:w-[181px] h-9 lg:h-12 text-md lg:text-xl font-medium rounded-full'
+              onClick={handleCopyLink}
             >
-              왕도로 가는길
+              {copied ? '복사됨!' : '왕도로 가는길'}
               <Linkbtn className='!w-[20px] lg:!w-[32px] !h-[20px] lg:!h-[32px]' />
             </Button>
           </div>
