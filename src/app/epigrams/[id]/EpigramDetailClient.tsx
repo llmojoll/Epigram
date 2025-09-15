@@ -29,6 +29,7 @@ export default function EpigramDetailClient({ initialData }: Props) {
   const [likes, setLikes] = useState(0);
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const [copied, setCopied] = useState(false);
 
   const { register, handleSubmit, reset } = useForm<CommentFormValues>({
     defaultValues: { content: '' },
@@ -77,6 +78,17 @@ export default function EpigramDetailClient({ initialData }: Props) {
     deleteCommentMutation.mutate(commentId);
   };
 
+  //url 복사 기능
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.log('url복사안됨', err);
+    }
+  };
+
   return (
     <main className=''>
       {/* 피드 */}
@@ -106,8 +118,9 @@ export default function EpigramDetailClient({ initialData }: Props) {
             <Button
               variant='line100'
               className='w-[130px] lg:w-[181px] h-9 lg:h-12 text-md lg:text-xl font-medium rounded-full'
+              onClick={handleCopyLink}
             >
-              왕도로 가는길
+              {copied ? '복사됨!' : '왕도로 가는길'}
               <Linkbtn className='!w-[20px] lg:!w-[32px] !h-[20px] lg:!h-[32px]' />
             </Button>
           </div>
