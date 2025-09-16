@@ -40,6 +40,13 @@ export const getComments = async ({ epigramId, limit = 10, cursor }: CommentId) 
   return res.data;
 };
 
+//댓글 수정
+export const editComment = async (commentId: number, content: string) => {
+  const res = await apiClient.patch(`/comments/${commentId}`, { content });
+  return res.data;
+};
+
+//댓글삭제
 export const deleteComment = async (commentId: number) => {
   const res = await apiClient.delete(`/comments/${commentId}`);
   return res.data;

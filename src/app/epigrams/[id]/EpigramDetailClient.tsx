@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { deleteComment, postComment } from '@/api/comment';
+import { deleteComment, postComment, editComment } from '@/api/comment';
 import { Epigram, getEpigramById, likeEpigram, unlikeEpigram } from '@/api/epigram';
 import Likeicon from '@/assets/likeicon.svg';
 import Linkbtn from '@/assets/linkbtn.svg';
@@ -35,7 +35,20 @@ export default function EpigramDetailClient({ epigramId }: Props) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comments', epigramId] }),
   });
 
+  //댓글 수정 mutation
+  const handleEditComment = (commentId: number, content: string) => {
+    EditCommentMutaiton.mutate({ commentId, content });
+  };
+  const EditCommentMutaiton = useMutation({
+    mutationFn: ({ commentId, content }: { commentId: number; content: string }) =>
+      editComment(commentId, content),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comments', Number(epigramId)] }),
+  });
+
   // 댓글 삭제 mutation
+  const handleDeleteComment = (commentId: number) => {
+    deleteCommentMutation.mutate(commentId);
+  };
   const deleteCommentMutation = useMutation({
     mutationFn: (commentId: number) => deleteComment(commentId),
     onSuccess: () =>
@@ -43,10 +56,6 @@ export default function EpigramDetailClient({ epigramId }: Props) {
         queryKey: ['comments', Number(epigramId)],
       }),
   });
-
-  const handleDeleteComment = (commentId: number) => {
-    deleteCommentMutation.mutate(commentId);
-  };
 
   // 좋아요 mutation
   const likeMutation = useMutation({
@@ -119,7 +128,11 @@ export default function EpigramDetailClient({ epigramId }: Props) {
           <div>유저이미지</div>
           <CommentForm onSubmit={(content) => commentMutation.mutate(content)} />
         </div>
-        <CommentList epigramId={epigramId} onDelete={handleDeleteComment} />
+        <CommentList
+          epigramId={epigramId}
+          onDelete={handleDeleteComment}
+          onEdit={handleEditComment}
+        />
       </div>
     </main>
   );
