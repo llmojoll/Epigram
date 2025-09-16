@@ -10,9 +10,10 @@ import CommentItem from '@/components/comment/CommentItem';
 interface CommentListProps {
   epigramId: number;
   onDelete?: (commentId: number) => void;
+  onEdit?: (id: number, content: string) => void;
 }
 
-export default function CommentList({ epigramId, onDelete }: CommentListProps) {
+export default function CommentList({ epigramId, onDelete, onEdit }: CommentListProps) {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   // 무한 댓글 조회
@@ -49,7 +50,7 @@ export default function CommentList({ epigramId, onDelete }: CommentListProps) {
   return (
     <div className='flex flex-col mt-3 md:mt-8 lg:mt-10'>
       {allComments.map((comment) => (
-        <CommentItem key={comment.id} comment={comment} onDelete={onDelete} />
+        <CommentItem key={comment.id} comment={comment} onDelete={onDelete} onEdit={onEdit} />
       ))}
       <div ref={loadMoreRef} className='h-10 flex justify-center items-center'>
         {isFetchingNextPage && <span>불러오는 중...</span>}

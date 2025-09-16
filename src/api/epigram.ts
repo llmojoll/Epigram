@@ -21,6 +21,9 @@ export type Epigram = {
   tags?: { id: string; name: string }[];
   writerId: number;
 
+  referenceUrl: string;
+  referenceTitle: string;
+
   likeCount: number;
   isLiked: boolean;
 };
@@ -41,6 +44,11 @@ export async function getEpigrams(params?: { cursor?: string; limit?: number }) 
 //epigram 삭제
 export const deleteEpigram = async (id: number) => {
   const res = await apiClient.delete(`/epigrams/${id}`);
+  return res.data;
+};
+//epigram 수정
+export const editEpigram = async (id: number, data: EpigramPayload) => {
+  const res = await apiClient.patch(`/epigrams/${id}`, data);
   return res.data;
 };
 
