@@ -41,7 +41,10 @@ export default function EpigramDropdown({ epigramId }: EpigramDropdownProps) {
 
       <DropdownMenuContent className='cursor-pointer w-[97px] lg:w-[134px] rounded-xl bg-black-100 border border-blue-300 -translate-x-10 lg:-translate-x-12'>
         {/* 수정하기 */}
-        <DropdownMenuItem className='flex justify-center font-regular text-black-600 text-md lg:text-xl '>
+        <DropdownMenuItem
+          className='flex justify-center font-regular text-black-600 text-md lg:text-xl '
+          onClick={() => router.push(`/epigrams/${epigramId}/edit`)}
+        >
           수정하기
         </DropdownMenuItem>
 
